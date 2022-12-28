@@ -9,8 +9,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
+
     @Override
     public ItemDto addItem(int ownerId, ItemDto itemDto) {
         return itemStorage.addItem(ownerId, itemDto);

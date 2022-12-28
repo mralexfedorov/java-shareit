@@ -11,6 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+
     @Override
     public UserDto createUser(UserDto user) {
         return userStorage.createUser(user);

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @AllArgsConstructor
-public class ItemStorageImpl implements ItemStorage{
+public class ItemStorageImpl implements ItemStorage {
     private final ItemDao itemDao;
     private final UserDao userDao;
 
