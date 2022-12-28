@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class UserDaoImpl implements UserDao{
+public class UserDaoImpl implements UserDao {
     private HashMap<Integer, User> users;
     private int id = 0;
 
