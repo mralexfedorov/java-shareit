@@ -13,5 +13,5 @@ public interface ItemService {
 
     List<ItemDto> getAllItemsByOwnerId(int ownerId);
 
-    List<ItemDto> getAvailableItemsByName(String name);
+    List<ItemDto> searchAvailableItemsByName(String name);
 }

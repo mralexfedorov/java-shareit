@@ -13,5 +13,5 @@ public interface ItemDao {
 
     List<Item> getAllItemsByOwnerId(int ownerId);
 
-    List<Item> getAvailableItemsByName(String name);
+    List<Item> searchAvailableItemsByName(String name);
 }

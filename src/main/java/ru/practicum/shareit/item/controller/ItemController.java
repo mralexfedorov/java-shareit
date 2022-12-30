@@ -47,10 +47,10 @@ public class ItemController {
 
 
     @GetMapping("/search")
-    public List<ItemDto> getAvailableItemsByName(@RequestHeader(OWNER_ID) int ownerId,
+    public List<ItemDto> searchAvailableItemsByName(@RequestHeader(OWNER_ID) int ownerId,
                                                       @RequestParam String text) {
         log.info("Получение всех доступных предметов, содержащих в названии: " + text);
-        return itemService.getAvailableItemsByName(text);
+        return itemService.searchAvailableItemsByName(text);
 
     }
 

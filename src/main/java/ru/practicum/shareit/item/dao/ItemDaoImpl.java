@@ -50,7 +50,7 @@ public class ItemDaoImpl implements ItemDao {
     }
 
     @Override
-    public List<Item> getAvailableItemsByName(String name) {
+    public List<Item> searchAvailableItemsByName(String name) {
         List<Item> itemsByName = new ArrayList<>();
         if (!name.isEmpty()) {
             items.forEach((key, value) -> {
