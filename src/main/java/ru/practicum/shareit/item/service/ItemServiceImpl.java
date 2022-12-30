@@ -5,11 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
@@ -41,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
                     String.format("У предмета с id %s не заполнено название", itemDto.getId()));
         }
         ItemDto createdItem = itemStorage.addItem(ownerId, itemDto);
+        log.debug("Создан предмет {}.", createdItem.getName());
         return createdItem;
     }
 
