@@ -5,11 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,7 +23,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(int ownerId, ItemDto itemDto) {
-        UserDto userFromStorage = userStorage.getUserById(ownerId);
+        User userFromStorage = userStorage.getUserById(ownerId);
         if (userFromStorage == null) {
             throw new UserNotFoundException(
                     String.format("Пользователь с таким id %s не существует", ownerId));
@@ -37,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ItemNameEmptyException(
                     String.format("У предмета с id %s не заполнено название", itemDto.getId()));
         }
-        ItemDto createdItem = itemStorage.addItem(ownerId, itemDto);
+        ItemDto createdItem = ItemMapper.toItemDto(itemStorage.addItem(ownerId, ItemMapper.toItem(ownerId, itemDto)));
         log.debug("Создан предмет {}.", createdItem.getName());
         return createdItem;
     }
@@ -48,35 +51,39 @@ public class ItemServiceImpl implements ItemService {
             throw new UserNotFoundException(
                     String.format("Пользователь с таким id %s не существует", id));
         }
-        ItemDto itemFromStorage = itemStorage.getItemById(id);
+        Item itemFromStorage = itemStorage.getItemById(id);
         if (itemFromStorage == null || itemFromStorage.getOwnerId() != ownerId) {
             throw new ItemNotFoundException(
                     String.format("Предмет с таким id %s не существует", id));
         }
 
         itemDto.setId(id);
-        ItemDto updatedItem = itemStorage.updateItem(ownerId, itemDto, id);
+        ItemDto updatedItem = ItemMapper.toItemDto(itemStorage.updateItem(ownerId,
+                ItemMapper.toExistsItem(itemDto, itemFromStorage), id));
+
         log.debug("Данные о предмете {} обновлены.", updatedItem.getName());
         return updatedItem;
     }
 
     @Override
     public ItemDto getItemById(int id) {
-        ItemDto itemFromStorage = itemStorage.getItemById(id);
+        Item itemFromStorage = itemStorage.getItemById(id);
         if (itemFromStorage == null) {
             throw new UserNotFoundException(
                     String.format("Предмет с таким id %s не существует", id));
         }
-        return itemFromStorage;
+        return ItemMapper.toItemDto(itemFromStorage);
     }
 
     @Override
     public List<ItemDto> getAllItemsByOwnerId(int ownerId) {
-        return itemStorage.getAllItemsByOwnerId(ownerId);
+        return itemStorage.getAllItemsByOwnerId(ownerId).stream().map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> searchAvailableItemsByName(String name) {
-        return itemStorage.searchAvailableItemsByName(name);
+        return itemStorage.searchAvailableItemsByName(name).stream().map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

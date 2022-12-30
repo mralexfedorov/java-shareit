@@ -8,11 +8,14 @@ import ru.practicum.shareit.exceptions.UserEmailEmptyException;
 import ru.practicum.shareit.exceptions.UserEmailNotValidException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,7 +39,7 @@ public class UserServiceImpl implements UserService {
             throw new UserEmailDuplicatedException("Такой email уже существует.");
         }
 
-        UserDto createdUser = userStorage.createUser(user);
+        UserDto createdUser = UserMapper.toUserDto(userStorage.createUser(UserMapper.toUser(user)));
 
         log.debug("Пользователь {} создан.", createdUser.getName());
         return createdUser;
@@ -44,7 +47,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto user, int id) {
-        if (userStorage.getUserById(id) == null) {
+        User userFromStorage = userStorage.getUserById(id);
+        if (userFromStorage == null) {
             throw new UserNotFoundException(
                     String.format("Пользователь с таким id %s не существует", id));
         }
@@ -60,24 +64,26 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setId(id);
-        UserDto updatedUser = userStorage.updateUser(user, id);
+        UserDto updatedUser = UserMapper.toUserDto(userStorage.updateUser(UserMapper.toExistsUser(user,
+                userFromStorage), id));
         log.debug("Данные о пользователе {} обновлены.", updatedUser.getName());
         return updatedUser;
     }
 
     @Override
     public UserDto getUser(int userId) {
-        UserDto userFromStorage = userStorage.getUserById(userId);
+        User userFromStorage = userStorage.getUserById(userId);
         if (userFromStorage == null) {
             throw new UserNotFoundException(
                     String.format("Пользователь с таким id %s не существует", userId));
         }
-        return userStorage.getUserById(userId);
+        return UserMapper.toUserDto(userStorage.getUserById(userId));
     }
 
     @Override
     public List<UserDto> findAllUsers() {
-        return userStorage.findAllUsers();
+        return userStorage.findAllUsers().stream().map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
