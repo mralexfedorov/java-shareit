@@ -15,5 +15,6 @@ public interface ItemService {
     List<ItemDto> getAllItemsByOwnerId(int ownerId);
 
     List<ItemDto> searchAvailableItemsByName(String name);
+
     CommentDto addComment(int ownerId, int itemId, CommentDto commentDto);
 }

@@ -61,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", ownerId)));
         Item itemFromStorage = itemRepository.findByIdAndOwnerId(id, ownerId).orElseThrow(()
-                -> new NoSuchElementException (String.format("Предмет с таким id %s не существует", id)));
+                -> new NoSuchElementException(String.format("Предмет с таким id %s не существует", id)));
 
         itemDto.setId(id);
         itemDto.setOwner(owner);
