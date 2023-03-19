@@ -44,7 +44,10 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Предмет не доступен для бронирования");
         }
 
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+        if (bookingDto.getStart() == null || bookingDto.getEnd() == null
+                || bookingDto.getStart().isBefore(LocalDateTime.now())
+                || bookingDto.getStart().isAfter(bookingDto.getEnd())
+                || bookingDto.getStart().isEqual(bookingDto.getEnd())) {
             throw new ValidationException("Период бронирования указан некорректно");
         }
 

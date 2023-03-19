@@ -19,6 +19,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -36,8 +37,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(int ownerId, ItemDto itemDto) {
-        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
-                String.format("Пользователь с таким id %s не существует", ownerId)));
         if (itemDto.getAvailable() == null) {
             throw new ValidationException(
                     String.format("Предмет с id %s не доступен", itemDto.getId()));
@@ -50,6 +49,8 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException(
                     String.format("У предмета с id %s не заполнено название", itemDto.getId()));
         }
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
+                String.format("Пользователь с таким id %s не существует", ownerId)));
         itemDto.setOwner(owner);
         ItemDto createdItem = ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto)));
         log.debug("Создан предмет {}.", createdItem.getName());
@@ -76,14 +77,15 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItemById(int userId, int id) {
         Item itemFromStorage = itemRepository.findById(id).orElseThrow(() -> new NoSuchElementException(
                 String.format("Предмет с таким id %s не существует", id)));
+        LocalDateTime now = LocalDateTime.now();
         return ItemMapper.toItemWithBookingsDto(itemFromStorage,
-                bookingRepository.findLastBookings(id, userId, LocalDateTime.now())
+                bookingRepository.findAllByItemIdAndItemOwnerIdAndEndBeforeOrderByStartDesc(id, userId, now)
                         .stream()
                         .min(Comparator.comparing(Booking::getEnd))
                         .orElse(null),
-                bookingRepository.findNextBookings(id, userId, LocalDateTime.now())
+                bookingRepository.findAllByItemIdAndItemOwnerIdAndStartAfterOrderByStartDesc(id, userId, now)
                         .stream()
-                        .min(Comparator.comparing(Booking::getStart))
+                        .max(Comparator.comparing(Booking::getStart))
                         .orElse(null),
                 commentRepository.getAllByItemId(id)
                         .stream()
@@ -94,16 +96,18 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAllItemsByOwnerId(int ownerId) {
         List<ItemDto> itemsDto = new ArrayList<>();
-
+        LocalDateTime now = LocalDateTime.now();
         for (Item item: itemRepository.findAllByOwnerId(ownerId)) {
             itemsDto.add(ItemMapper.toItemWithBookingsDto(item,
-                    bookingRepository.findLastBookings(item.getId(), ownerId, LocalDateTime.now())
+                    bookingRepository.findAllByItemIdAndItemOwnerIdAndEndBeforeOrderByStartDesc(item.getId(),
+                                    ownerId, now)
                             .stream()
                             .min(Comparator.comparing(Booking::getEnd))
                             .orElse(null),
-                    bookingRepository.findNextBookings(item.getId(), ownerId, LocalDateTime.now())
+                    bookingRepository.findAllByItemIdAndItemOwnerIdAndStartAfterOrderByStartDesc(item.getId(),
+                                    ownerId, now)
                             .stream()
-                            .min(Comparator.comparing(Booking::getStart))
+                            .max(Comparator.comparing(Booking::getStart))
                             .orElse(null),
                     commentRepository.getAllByItemId(item.getId())
                             .stream()
