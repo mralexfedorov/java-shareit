@@ -78,13 +78,14 @@ public class ItemServiceImpl implements ItemService {
                 String.format("Предмет с таким id %s не существует", id)));
         LocalDateTime now = LocalDateTime.now();
         return ItemMapper.toItemWithBookingsDto(itemFromStorage,
-                bookingRepository.findAllByItemIdAndItemOwnerIdAndEndBeforeOrderByStartDesc(id, userId, now)
+                bookingRepository.findAllByItemIdAndItemOwnerIdAndStartBeforeOrderByStartDesc(id, userId, now)
                         .stream()
-                        .min(Comparator.comparing(Booking::getEnd))
+                        .max(Comparator.comparing(Booking::getEnd))
                         .orElse(null),
-                bookingRepository.findAllByItemIdAndItemOwnerIdAndStartAfterOrderByStartDesc(id, userId, now)
+                bookingRepository.findAllByItemIdAndItemOwnerIdAndStatusAndStartAfterOrderByStartDesc(id, userId,
+                                BookingStatus.APPROVED, now)
                         .stream()
-                        .max(Comparator.comparing(Booking::getStart))
+                        .min(Comparator.comparing(Booking::getStart))
                         .orElse(null),
                 commentRepository.getAllByItemId(id)
                         .stream()
@@ -98,15 +99,15 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
         for (Item item: itemRepository.findAllByOwnerId(ownerId)) {
             itemsDto.add(ItemMapper.toItemWithBookingsDto(item,
-                    bookingRepository.findAllByItemIdAndItemOwnerIdAndEndBeforeOrderByStartDesc(item.getId(),
+                    bookingRepository.findAllByItemIdAndItemOwnerIdAndStartBeforeOrderByStartDesc(item.getId(),
                                     ownerId, now)
                             .stream()
-                            .min(Comparator.comparing(Booking::getEnd))
+                            .max(Comparator.comparing(Booking::getEnd))
                             .orElse(null),
-                    bookingRepository.findAllByItemIdAndItemOwnerIdAndStartAfterOrderByStartDesc(item.getId(),
-                                    ownerId, now)
+                    bookingRepository.findAllByItemIdAndItemOwnerIdAndStatusAndStartAfterOrderByStartDesc(item.getId(),
+                                    ownerId, BookingStatus.APPROVED, now)
                             .stream()
-                            .max(Comparator.comparing(Booking::getStart))
+                            .min(Comparator.comparing(Booking::getStart))
                             .orElse(null),
                     commentRepository.getAllByItemId(item.getId())
                             .stream()
