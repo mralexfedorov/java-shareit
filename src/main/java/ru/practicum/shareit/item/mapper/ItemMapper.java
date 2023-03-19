@@ -2,8 +2,13 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingItemDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,18 +19,59 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
-                item.getOwnerId() != 0 ? item.getOwnerId() : 0,
-                item.getRequestId() != 0 ? item.getRequestId() : 0
+                item.getOwner(),
+                item.getRequestId() != 0 ? item.getRequestId() : 0,
+                null,
+                null,
+                null
         );
     }
 
-    public static Item toItem(int ownerId, ItemDto item) {
+    public static ItemDto toItemWithBookingsDto(Item item,
+                                                Booking lastBooking,
+                                                Booking nextBooking,
+                                                List<CommentDto> comments) {
+        BookingItemDto lastBookingItemDto = null;
+        BookingItemDto nextBookingItemDto = null;
+
+        if (lastBooking != null) {
+            lastBookingItemDto = new BookingItemDto(
+                    lastBooking.getId(),
+                    lastBooking.getStart(),
+                    lastBooking.getEnd(),
+                    lastBooking.getBooker().getId()
+            );
+        }
+
+        if (nextBooking != null) {
+            nextBookingItemDto = new BookingItemDto(
+                    nextBooking.getId(),
+                    nextBooking.getStart(),
+                    nextBooking.getEnd(),
+                    nextBooking.getBooker().getId()
+            );
+        }
+
+        return new ItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable(),
+                item.getOwner(),
+                item.getRequestId() != 0 ? item.getRequestId() : 0,
+                lastBookingItemDto,
+                nextBookingItemDto,
+                comments
+        );
+    }
+
+    public static Item toItem(ItemDto item) {
         return new Item(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                ownerId,
+                item.getOwner(),
                 item.getRequestId() != 0 ? item.getRequestId() : 0
         );
     }

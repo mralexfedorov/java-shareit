@@ -41,7 +41,7 @@ public class ItemDaoImpl implements ItemDao {
     public List<Item> getAllItemsByOwnerId(int ownerId) {
         List<Item> itemsByOwnerId = new ArrayList<>();
         items.forEach((key, value) -> {
-            if (value.getOwnerId() == ownerId) {
+            if (value.getOwner().getId() == ownerId) {
                 itemsByOwnerId.add(value);
             }
         });
