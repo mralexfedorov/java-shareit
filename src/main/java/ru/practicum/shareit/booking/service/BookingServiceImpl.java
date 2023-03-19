@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BookingServiceImpl implements BookingService{
+public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService{
             throw new ValidationException("Статус заявки бронирования изменить нельзя");
         }
 
-        BookingStatus bookingStatus = status ? BookingStatus.APPROVED: BookingStatus.REJECTED;
+        BookingStatus bookingStatus = status ? BookingStatus.APPROVED : BookingStatus.REJECTED;
         bookingDto.setStatus(bookingStatus);
 
         return BookingMapper.toBookingDto(
