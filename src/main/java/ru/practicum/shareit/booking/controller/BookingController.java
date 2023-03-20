@@ -19,7 +19,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping()
-    public BookingDto save(@RequestBody @Valid BookingDto bookingDto,
+    public BookingDto save(@RequestBody BookingDto bookingDto,
                            @RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("Создание бронирования {} пользоватлем с id = {}", bookingDto, userId);
         return bookingService.save(bookingDto, userId);
@@ -42,14 +42,14 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getByBooker(@RequestHeader("X-Sharer-User-Id") int userId,
-                                        @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                        @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получение бронирований со статусом {} пользователем c id = {}", state, userId);
         return bookingService.getByBooker(userId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getByOwner(@RequestHeader("X-Sharer-User-Id") int owner,
-                                       @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                       @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получение бронирований со статусом {} владельца c id = {}", state, owner);
         return bookingService.getByOwner(owner, state);
     }

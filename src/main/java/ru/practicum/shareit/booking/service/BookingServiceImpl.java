@@ -14,6 +14,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -28,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public BookingDto save(BookingDto bookingDto, int userId) {
         User booker = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(
@@ -69,6 +72,7 @@ public class BookingServiceImpl implements BookingService {
         return createdBooking;
     }
 
+    @Transactional
     @Override
     public BookingDto approve(int userId, int bookingId, boolean status) {
 

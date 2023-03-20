@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
+    @Transactional
     @Override
     public UserDto createUser(UserDto user) {
         String email = user.getEmail();
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
         return createdUser;
     }
 
+    @Transactional
     @Override
     public UserDto updateUser(UserDto user, int id) {
         User userFromStorage = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException(
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void deleteUser(int userId) {
         userRepository.deleteById(userId);

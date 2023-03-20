@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public ItemDto addItem(int ownerId, ItemDto itemDto) {
         if (itemDto.getAvailable() == null) {
@@ -56,6 +58,7 @@ public class ItemServiceImpl implements ItemService {
         return createdItem;
     }
 
+    @Transactional
     @Override
     public ItemDto updateItem(int ownerId, ItemDto itemDto, int id) {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
@@ -128,6 +131,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public CommentDto addComment(int ownerId, int itemId, CommentDto commentDto) {
         User user = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
