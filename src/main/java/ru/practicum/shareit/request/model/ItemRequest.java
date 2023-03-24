@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 public class ItemRequest {
     private int id;
     private String description;
-    private int requestorId;
+    private int requesterId;
     private LocalDateTime created;
 }
