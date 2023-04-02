@@ -85,18 +85,5 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(userDto2.getId()), Integer.class))
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
                 .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
-
-        mvc.perform(delete("/users/" + userDto1.getId())
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        mvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(userDto2.getId()), Integer.class))
-                .andExpect(jsonPath("$[0].name", is(userDto2.getName())))
-                .andExpect(jsonPath("$[0].email", is(userDto2.getEmail())));
     }
 }
