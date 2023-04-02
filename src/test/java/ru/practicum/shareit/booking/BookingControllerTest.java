@@ -74,6 +74,14 @@ public class BookingControllerTest {
 
     @Test
     void createBookingAndCheck() throws Exception {
+        mvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .header("X-Sharer-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -93,6 +101,14 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.id", is(userDto2.getId()), Integer.class))
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
                 .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+
+        mvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .header("X-Sharer-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))

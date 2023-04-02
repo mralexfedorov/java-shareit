@@ -48,6 +48,16 @@ public class UserControllerTest {
 
     @Test
     void createUserAndCheck() throws Exception {
+        mvc.perform(get("/users/" + userDto1.getId()))
+                .andExpect(status().is4xxClientError());
+
+        mvc.perform(patch("/users/" + userDto2.getId())
+                        .content(mapper.writeValueAsString(userDto2))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -74,7 +84,16 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
                 .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
 
-        userDto2.setEmail("upd" + userDto2.getEmail());
+        userDto2.setEmail("email");
+
+        mvc.perform(patch("/users/" + userDto2.getId())
+                        .content(mapper.writeValueAsString(userDto2))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+        userDto2.setEmail("bob.doe@mail.org");
 
         mvc.perform(patch("/users/" + userDto2.getId())
                         .content(mapper.writeValueAsString(userDto2))
