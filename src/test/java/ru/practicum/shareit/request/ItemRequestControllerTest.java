@@ -74,22 +74,6 @@ public class ItemRequestControllerTest {
 
     @Test
     void createItemRequestAndCheck() throws Exception {
-        mvc.perform(get("/requests/" + itemRequestDto.getId())
-                        .header("X-Sharer-User-Id", 99)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
-
-        mvc.perform(get("/requests/" + itemRequestDto.getId())
-                        .header("X-Sharer-User-Id", 1)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
-
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)

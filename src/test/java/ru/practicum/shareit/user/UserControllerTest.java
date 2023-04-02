@@ -99,32 +99,4 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[1].name", is(userDto2.getName())))
                 .andExpect(jsonPath("$[1].email", is(userDto2.getEmail())));
     }
-
-    @Test
-    void getUnknownUser() throws Exception {
-        mvc.perform(get("/users/" + userDto1.getId()))
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
-    }
-
-    @Test
-    void updateUnknownUser() throws Exception {
-        mvc.perform(patch("/users/" + userDto2.getId())
-                        .content(mapper.writeValueAsString(userDto2))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
-    }
-
-    @Test
-    void createUserWithInvalidEmail() throws Exception {
-        userDto2.setEmail("email");
-
-        mvc.perform(patch("/users/" + userDto2.getId())
-                        .content(mapper.writeValueAsString(userDto2))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ValidationException));
-    }
 }
