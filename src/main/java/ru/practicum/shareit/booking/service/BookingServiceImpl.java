@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -130,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getByBooker(int bookerId, String state) {
+    public List<BookingDto> getByBooker(int bookerId, String state, Pageable pageable) {
         userRepository.findById(bookerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", bookerId)));
 
@@ -144,21 +145,21 @@ public class BookingServiceImpl implements BookingService {
         }
 
         switch (bookingState) {
-            case ALL: return bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId).stream()
+            case ALL: return bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId, pageable).stream()
                     .map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case CURRENT: return bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
-                    now, now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case PAST: return bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId,
-                    now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case FUTURE: return bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(bookerId,
-                    now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            default: return bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.valueOf(state))
-                    .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+            default: return bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.valueOf(state),
+                            pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
         }
     }
 
     @Override
-    public List<BookingDto> getByOwner(int ownerId, String state) {
+    public List<BookingDto> getByOwner(int ownerId, String state, Pageable pageable) {
         userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", ownerId)));
 
@@ -172,16 +173,16 @@ public class BookingServiceImpl implements BookingService {
         }
 
         switch (bookingState) {
-            case ALL: return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId).stream()
+            case ALL: return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId, pageable).stream()
                     .map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case CURRENT: return bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
-                    now, now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case PAST: return bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId,
-                    now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case FUTURE: return bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId,
-                    now).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            default: return bookingRepository.findAllByItemOwnerIdAndStatus(ownerId, BookingStatus.valueOf(state))
-                    .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+            default: return bookingRepository.findAllByItemOwnerIdAndStatus(ownerId, BookingStatus.valueOf(state),
+                            pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
         }
     }
 }

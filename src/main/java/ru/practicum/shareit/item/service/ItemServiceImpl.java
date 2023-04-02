@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -15,15 +17,13 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
@@ -53,6 +54,7 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", ownerId)));
         itemDto.setOwner(owner);
+
         ItemDto createdItem = ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto)));
         log.debug("Создан предмет {}.", createdItem.getName());
         return createdItem;
@@ -97,10 +99,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItemsByOwnerId(int ownerId) {
+    public List<ItemDto> getAllItemsByOwnerId(int ownerId, Pageable pageable) {
         List<ItemDto> itemsDto = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
-        for (Item item: itemRepository.findAllByOwnerId(ownerId)) {
+        for (Item item: itemRepository.findAllByOwnerId(ownerId, pageable)) {
             itemsDto.add(ItemMapper.toItemWithBookingsDto(item,
                     bookingRepository.findAllByItemIdAndItemOwnerIdAndStartBeforeOrderByStartDesc(item.getId(),
                                     ownerId, now)
@@ -122,12 +124,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchAvailableItemsByName(String name) {
+    public List<ItemDto> searchAvailableItemsByName(String name, Pageable pageable) {
         if (name.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return itemRepository.search(name).stream().map(ItemMapper::toItemDto)
+        return itemRepository.search(name, pageable).stream().map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -136,12 +138,13 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(int ownerId, int itemId, CommentDto commentDto) {
         User user = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", ownerId)));
-        if (bookingRepository.findAllByBookerIdAndStatus(ownerId, BookingStatus.APPROVED).isEmpty()) {
+        if (bookingRepository.findAllByBookerIdAndStatus(ownerId, BookingStatus.APPROVED,
+                PageRequest.of(0, 20)).isEmpty()) {
             throw new ValidationException(String.format("Пользователь с id %s не бронировал предмет с id %s",
                     ownerId, itemId));
         }
         if (!bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(ownerId,
-                        LocalDateTime.now().plusDays(1)).isEmpty()) {
+                        LocalDateTime.now().plusDays(1), PageRequest.of(0, 20)).isEmpty()) {
             throw new ValidationException(String.format("Пользователь с id %s забронировал предмет с id %s в будущем",
                     ownerId, itemId));
         }

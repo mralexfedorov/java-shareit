@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -42,17 +43,21 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByOwnerId(@RequestHeader(USER_ID) int userId) {
+    public List<ItemDto> getAllItemsByOwnerId(@RequestHeader(USER_ID) int userId,
+                                              @RequestParam(name = "from", defaultValue = "0") int from,
+                                              @RequestParam(name = "size", defaultValue = "20") int size) {
         log.info("Получение всех предметов пользователя с id=" + userId);
-        return itemService.getAllItemsByOwnerId(userId);
+        return itemService.getAllItemsByOwnerId(userId, PageRequest.of(from, size));
     }
 
 
     @GetMapping("/search")
     public List<ItemDto> searchAvailableItemsByName(@RequestHeader(USER_ID) int userId,
-                                                    @RequestParam String text) {
+                                                    @RequestParam(name = "text") String text,
+                                                    @RequestParam(name = "from", defaultValue = "0") int from,
+                                                    @RequestParam(name = "size", defaultValue = "20") int size) {
         log.info("Получение всех доступных предметов, содержащих в названии: " + text);
-        return itemService.searchAvailableItemsByName(text);
+        return itemService.searchAvailableItemsByName(text, PageRequest.of(from, size));
 
     }
 
