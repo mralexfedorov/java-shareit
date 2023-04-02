@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -53,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
         }
         User owner = userRepository.findById(ownerId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", ownerId)));
-        itemDto.setOwner(owner);
+        itemDto.setOwner(UserMapper.toUserDto(owner));
 
         ItemDto createdItem = ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto)));
         log.debug("Создан предмет {}.", createdItem.getName());
@@ -69,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
                 -> new NoSuchElementException(String.format("Предмет с таким id %s не существует", id)));
 
         itemDto.setId(id);
-        itemDto.setOwner(owner);
+        itemDto.setOwner(UserMapper.toUserDto(owner));
         ItemDto updatedItem = ItemMapper.toItemDto(itemRepository.save(
                 ItemMapper.toExistsItem(itemDto, itemFromStorage)));
 
