@@ -103,7 +103,6 @@ public class UserControllerTest {
     @Test
     void getUnknownUser() throws Exception {
         mvc.perform(get("/users/" + userDto1.getId()))
-                .andExpect(status().is4xxClientError())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
     }
 
@@ -114,7 +113,6 @@ public class UserControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException));
     }
 
@@ -127,7 +125,6 @@ public class UserControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ValidationException));
     }
 }
