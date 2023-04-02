@@ -35,11 +35,6 @@ public class UserControllerTest {
     private UserDto userDto2;
 
     @BeforeEach
-    public void clearContext() {
-        userRepository.deleteAll();
-    }
-
-    @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
                 1,
