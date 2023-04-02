@@ -40,6 +40,11 @@ public class ItemRequestControllerTest {
     private ItemRequestDto itemRequestDto;
 
     @BeforeEach
+    public void clearContext() {
+        itemRequestRepository.deleteAll();
+    }
+
+    @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
                 1,

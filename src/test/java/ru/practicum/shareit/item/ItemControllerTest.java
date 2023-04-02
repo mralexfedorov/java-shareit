@@ -36,6 +36,11 @@ public class ItemControllerTest {
     private ItemDto itemDto;
 
     @BeforeEach
+    public void clearContext() {
+        itemRepository.deleteAll();
+    }
+
+    @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
                 1,

@@ -41,6 +41,11 @@ public class BookingControllerTest {
     private BookingDto bookingDto;
 
     @BeforeEach
+    public void clearContext() {
+        bookingRepository.deleteAll();
+    }
+
+    @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
                 1,
