@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
     Optional<Item> findByIdAndOwnerId(int id, int ownerId);
+
     List<Item> findAllByOwnerId(int ownerId, Pageable pageable);
 
     List<Item> findAllByRequestId(int requestId);
