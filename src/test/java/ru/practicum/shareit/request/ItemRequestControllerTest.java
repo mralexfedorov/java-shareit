@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,31 +9,35 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.itemRequest.dto.ItemRequestDto;
+import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
+import ru.practicum.shareit.itemRequest.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ItemControllerTest {
+public class ItemRequestControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
     @Autowired
-    private ItemService itemService;
+    private ItemRequestService itemRequestService;
     @Autowired
-    private ItemRepository itemRepository;
+    private ItemRequestRepository itemRequestRepository;
+
     private UserDto userDto1;
     private UserDto userDto2;
     private ItemDto itemDto;
+    private ItemRequestDto itemRequestDto;
 
     @BeforeEach
     void setUp() {
@@ -56,10 +60,17 @@ public class ItemControllerTest {
                 null,
                 null
         );
+        itemRequestDto = new ItemRequestDto(
+                1,
+                "search for thing 1",
+                userDto1,
+                LocalDateTime.now(),
+                null
+        );
     }
 
     @Test
-    void createItemAndCheck() throws Exception {
+    void createItemRequestAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -81,27 +92,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
 
         mvc.perform(post("/items")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", 1)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
-
-        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
-
-        itemDto.setAvailable(true);
-
-        mvc.perform(patch("/items/" + itemDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
                         .header("X-Sharer-User-Id", 1)
                         .characterEncoding(StandardCharsets.UTF_8)

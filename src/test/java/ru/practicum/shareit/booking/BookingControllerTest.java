@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,32 +8,37 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ItemControllerTest {
+public class BookingControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
     @Autowired
-    private ItemService itemService;
+    private BookingService bookingService;
     @Autowired
-    private ItemRepository itemRepository;
+    private BookingRepository bookingRepository;
+
     private UserDto userDto1;
     private UserDto userDto2;
     private ItemDto itemDto;
+    private BookingDto bookingDto;
 
     @BeforeEach
     void setUp() {
@@ -49,17 +54,26 @@ public class ItemControllerTest {
                 1,
                 "thing 1",
                 "thing 1",
-                false,
+                true,
                 userDto1,
                 0,
                 null,
                 null,
                 null
         );
+        bookingDto = new BookingDto(
+                1,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                itemDto,
+                itemDto.getId(),
+                userDto2,
+                BookingStatus.WAITING
+        );
     }
 
     @Test
-    void createItemAndCheck() throws Exception {
+    void createBookingAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -92,25 +106,22 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
 
-        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
-
-        itemDto.setAvailable(true);
-
-        mvc.perform(patch("/items/" + itemDto.getId())
-                        .content(mapper.writeValueAsString(itemDto))
+        mvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(bookingDto))
                         .header("X-Sharer-User-Id", 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+        mvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .header("X-Sharer-User-Id", 2)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Integer.class))
+                .andExpect(jsonPath("$.itemId", is(itemDto.getId())));
     }
 }

@@ -11,8 +11,10 @@ import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -55,8 +57,8 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Период бронирования указан некорректно");
         }
 
-        bookingDto.setItem(itemFromStorage);
-        bookingDto.setBooker(booker);
+        bookingDto.setItem(ItemMapper.toItemDto(itemFromStorage));
+        bookingDto.setBooker(UserMapper.toUserDto(booker));
         bookingDto.setStatus(BookingStatus.WAITING);
 
         if (bookingDto.getItem().getOwner().getId() == userId) {

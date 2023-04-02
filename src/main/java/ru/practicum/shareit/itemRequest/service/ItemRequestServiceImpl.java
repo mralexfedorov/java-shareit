@@ -11,6 +11,7 @@ import ru.practicum.shareit.itemRequest.dto.ItemRequestDto;
 import ru.practicum.shareit.itemRequest.mapper.ItemRequestMapper;
 import ru.practicum.shareit.itemRequest.model.ItemRequest;
 import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -36,7 +37,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new ValidationException(
                     String.format("У запроса с id %s не заполнено описание", itemRequestDto.getId()));
         }
-        itemRequestDto.setRequester(requester);
+        itemRequestDto.setRequester(UserMapper.toUserDto(requester));
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequestDto createdItemRequest = ItemRequestMapper.toItemRequestDto(itemRequestRepository
                 .save(ItemRequestMapper.toItemRequest(itemRequestDto)));
