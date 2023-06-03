@@ -37,7 +37,7 @@ public class ItemServiceImplTest {
 
         // when
         userService.createUser(userDto);
-        itemService.addItem(1, itemDto);
+        itemService.addItem(userDto.getId(), itemDto);
 
         // then
         TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
