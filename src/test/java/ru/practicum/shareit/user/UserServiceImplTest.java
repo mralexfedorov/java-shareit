@@ -24,11 +24,12 @@ import static org.hamcrest.Matchers.*;
 public class UserServiceImplTest {
     private final EntityManager em;
     private final UserService service;
+    private UserDto userDto;
 
     @Test
     void saveUser() {
         // given
-        UserDto userDto = new UserDto(1, "Vlad", "vlad@email.com");
+        userDto = new UserDto(1, "Vlad", "vlad@email.com");
 
         // when
         service.createUser(userDto);

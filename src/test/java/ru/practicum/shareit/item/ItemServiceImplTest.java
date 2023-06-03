@@ -27,12 +27,14 @@ public class ItemServiceImplTest {
     private final EntityManager em;
     private final ItemService itemService;
     private final UserService userService;
+    private UserDto userDto;
+    private ItemDto itemDto;
 
     @Test
     void saveItem() {
         // given
-        UserDto userDto = new UserDto(1, "Vlad", "vlad@email.com");
-        ItemDto itemDto = new ItemDto(1, "Thing 1", "Thing 1 for doing something", true,
+        userDto = new UserDto(1, "Vlad", "vlad@email.com");
+        itemDto = new ItemDto(1, "Thing 1", "Thing 1 for doing something", true,
                 userDto, 1, null, null, null);
 
         // when
