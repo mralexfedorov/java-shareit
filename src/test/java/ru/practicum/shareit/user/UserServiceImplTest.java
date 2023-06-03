@@ -34,8 +34,8 @@ public class UserServiceImplTest {
         service.createUser(userDto);
 
         // then
-        TypedQuery<User> query = em.getEntityManager().
-                createQuery("Select u from User u where u.email = :email", User.class);
+        TypedQuery<User> query = em.getEntityManager()
+                        .createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail())
                 .getSingleResult();
 

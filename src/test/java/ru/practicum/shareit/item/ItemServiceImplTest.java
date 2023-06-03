@@ -40,8 +40,8 @@ public class ItemServiceImplTest {
         itemService.addItem(userDto.getId(), itemDto);
 
         // then
-        TypedQuery<Item> query = em.getEntityManager().
-                createQuery("Select i from Item i where i.id = :id", Item.class);
+        TypedQuery<Item> query = em.getEntityManager()
+                .createQuery("Select i from Item i where i.id = :id", Item.class);
         Item item = query.setParameter("id", itemDto.getId())
                 .getSingleResult();
 
