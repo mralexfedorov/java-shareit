@@ -1,11 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -13,37 +15,38 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 @Transactional
 @SpringBootTest(
         properties = "db.name=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class UserServiceImplTest {
+public class ItemServiceImplTest {
     private final EntityManager em;
-    private final UserService service;
+    private final ItemService itemService;
+    private final UserService userService;
 
     @Test
-    void saveUser() {
+    void saveItem() {
         // given
         UserDto userDto = new UserDto(1, "Vlad", "vlad@email.com");
+        ItemDto itemDto = new ItemDto(1, "Thing 1", "Thing 1 for doing something", true,
+                userDto, 1, null, null, null);
 
         // when
-        service.createUser(userDto);
+        userService.createUser(userDto);
+        itemService.addItem(1, itemDto);
 
         // then
-        TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
-        User user = query.setParameter("email", userDto.getEmail())
+        TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
+        Item item = query.setParameter("id", itemDto.getId())
                 .getSingleResult();
 
-        assertThat(user.getId(), notNullValue());
-        assertThat(user.getName(), equalTo(userDto.getName()));
-        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+        assertThat(item.getId(), notNullValue());
+        assertThat(item.getName(), equalTo(itemDto.getName()));
+        assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
     }
 }
