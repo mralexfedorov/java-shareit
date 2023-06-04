@@ -31,11 +31,11 @@ public class UserControllerTest {
     @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
-                1,
+                0,
                 "John",
                 "john.doe@mail.com");
         userDto2 = new UserDto(
-                2,
+                0,
                 "Bob",
                 "bob.doe@mail.com");
     }

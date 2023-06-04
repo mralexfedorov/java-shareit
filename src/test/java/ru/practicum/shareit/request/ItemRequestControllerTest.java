@@ -34,12 +34,12 @@ public class ItemRequestControllerTest {
     @BeforeEach
     void setUp() {
         userDto = new UserDto(
-                1,
+                0,
                 "John",
                 "john.doe@mail.com");
 
         itemDto = new ItemDto(
-                1,
+                0,
                 "thing 1",
                 "thing 1",
                 false,
