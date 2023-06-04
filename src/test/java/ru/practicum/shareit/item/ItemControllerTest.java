@@ -31,12 +31,12 @@ public class ItemControllerTest {
     @BeforeEach
     void setUp() {
         userDto = new UserDto(
-                0,
+                1,
                 "John",
                 "john.doer@mail.com");
 
         itemDto = new ItemDto(
-                0,
+                1,
                 "thing 1",
                 "thing 1",
                 false,
