@@ -36,8 +36,8 @@ public class BookingServiceImplTest {
     @Test
     void saveBooking() {
         // given
-        UserDto userDto1 = new UserDto(1, "Vlad", "vlad@email.com");
-        UserDto userDto2 = new UserDto(2, "Bob", "bob.doe@mail.com");
+        UserDto userDto1 = new UserDto(0, "Vlad", "vlad@email.com");
+        UserDto userDto2 = new UserDto(0, "Bob", "bob.doe@mail.com");
 
         // when
         UserDto createdUser1 = userService.createUser(userDto1);
