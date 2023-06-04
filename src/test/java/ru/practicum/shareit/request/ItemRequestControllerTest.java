@@ -60,44 +60,47 @@ public class ItemRequestControllerTest {
 
     @Test
     void createItemRequestAndCheck() throws Exception {
-        mvc.perform(post("/users")
+        UserDto createdUser = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
-                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        mvc.perform(get("/users"));
+        itemDto.setOwner(createdUser);
+        itemRequestDto.setRequester(createdUser);
 
-        mvc.perform(post("/items")
+        ItemDto createdItemDto = mapper.readValue(mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())))
+                .andReturn().getResponse().getContentAsString(), ItemDto.class);
 
-        itemDto.setAvailable(true);
+        createdItemDto.setAvailable(true);
 
-        mvc.perform(patch("/items/" + itemDto.getId())
-                        .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto.getId())
+        mvc.perform(patch("/items/" + createdItemDto.getId())
+                        .content(mapper.writeValueAsString(createdItemDto))
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.name", is(createdItemDto.getName())))
+                .andExpect(jsonPath("$.description", is(createdItemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(createdItemDto.getAvailable())));
 
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -105,7 +108,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests/" + itemRequestDto.getId())
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -113,14 +116,14 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

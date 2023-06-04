@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,58 +67,32 @@ public class BookingControllerTest {
 
     @Test
     void createBookingAndCheck() throws Exception {
-        userDto1 = new UserDto(
-                1,
-                "John",
-                "john.doe@mail.com");
-        userDto2 = new UserDto(
-                2,
-                "Bob",
-                "bob.doe@mail.com");
-        itemDto = new ItemDto(
-                1,
-                "thing 1",
-                "thing 1",
-                true,
-                userDto1,
-                0,
-                null,
-                null,
-                null
-        );
-        bookingDto = new BookingDto(
-                1,
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                itemDto,
-                itemDto.getId(),
-                userDto2,
-                BookingStatus.WAITING
-        );
-
-        mvc.perform(post("/users")
+        UserDto createdUser1 = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto1.getName())))
-                .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto1.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        mvc.perform(post("/users")
+        UserDto createdUser2 = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto2))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
-                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto2.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        mvc.perform(get("/users"));
+        itemDto.setOwner(createdUser1);
+        bookingDto.setBooker(createdUser2);
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", createdUser1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +103,7 @@ public class BookingControllerTest {
 
         mvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(bookingDto))
-                        .header("X-Sharer-User-Id", 2)
+                        .header("X-Sharer-User-Id", createdUser2.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

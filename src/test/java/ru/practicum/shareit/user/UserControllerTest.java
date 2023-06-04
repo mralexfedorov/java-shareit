@@ -42,51 +42,51 @@ public class UserControllerTest {
 
     @Test
     void createUserAndCheck() throws Exception {
-        mvc.perform(post("/users")
+        UserDto createdUser1 = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto1.getName())))
-                .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto1.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        mvc.perform(get("/users"));
-
-        mvc.perform(get("/users/" + userDto1.getId()))
+        mvc.perform(get("/users/" + createdUser1.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto1.getName())))
-                .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
+                .andExpect(jsonPath("$.name", is(createdUser1.getName())))
+                .andExpect(jsonPath("$.email", is(createdUser1.getEmail())));
 
-        mvc.perform(post("/users")
+        UserDto createdUser2 = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto2))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
-                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto2.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        userDto2.setEmail("bob.doe@mail.org");
+        createdUser2.setEmail("bob.doe@mail.org");
 
-        mvc.perform(patch("/users/" + userDto2.getId())
-                        .content(mapper.writeValueAsString(userDto2))
+        mvc.perform(patch("/users/" + createdUser2.getId())
+                        .content(mapper.writeValueAsString(createdUser2))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto2.getName())))
-                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$.name", is(createdUser2.getName())))
+                .andExpect(jsonPath("$.email", is(createdUser2.getEmail())));
 
         mvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name", is(userDto1.getName())))
-                .andExpect(jsonPath("$[0].email", is(userDto1.getEmail())))
-                .andExpect(jsonPath("$[1].name", is(userDto2.getName())))
-                .andExpect(jsonPath("$[1].email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$[0].name", is(createdUser1.getName())))
+                .andExpect(jsonPath("$[0].email", is(createdUser1.getEmail())))
+                .andExpect(jsonPath("$[1].name", is(createdUser2.getName())))
+                .andExpect(jsonPath("$[1].email", is(createdUser2.getEmail())));
 
-        mvc.perform(delete("/users/" + userDto1.getId()));
-        mvc.perform(delete("/users/" + userDto2.getId()));
+        mvc.perform(delete("/users/" + createdUser1.getId()));
+        mvc.perform(delete("/users/" + createdUser2.getId()));
     }
 }

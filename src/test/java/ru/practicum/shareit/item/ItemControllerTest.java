@@ -50,45 +50,45 @@ public class ItemControllerTest {
 
     @Test
     void createItemAndCheck() throws Exception {
-        mvc.perform(post("/users")
+        UserDto createdUser = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
-                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())))
+                .andReturn().getResponse().getContentAsString(), UserDto.class);
 
-        mvc.perform(get("/users"));
-
-        mvc.perform(post("/items")
+        ItemDto createdItemDto = mapper.readValue(mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())))
+                .andReturn().getResponse().getContentAsString(), ItemDto.class);
 
-        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", userDto.getId()))
+        mvc.perform(get("/items/" + createdItemDto.getId()).header("X-Sharer-User-Id", createdUser.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.name", is(createdItemDto.getName())))
+                .andExpect(jsonPath("$.description", is(createdItemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(createdItemDto.getAvailable())));
 
         itemDto.setAvailable(true);
 
-        mvc.perform(patch("/items/" + itemDto.getId())
-                        .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto.getId())
+        mvc.perform(patch("/items/" + createdItemDto.getId())
+                        .content(mapper.writeValueAsString(createdItemDto))
+                        .header("X-Sharer-User-Id", createdUser.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$.name", is(createdItemDto.getName())))
+                .andExpect(jsonPath("$.description", is(createdItemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(createdItemDto.getAvailable())));
     }
 }
