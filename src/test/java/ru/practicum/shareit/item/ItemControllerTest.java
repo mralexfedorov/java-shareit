@@ -59,6 +59,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
+        mvc.perform(get("/users"));
+
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
                         .header("X-Sharer-User-Id", userDto.getId())
