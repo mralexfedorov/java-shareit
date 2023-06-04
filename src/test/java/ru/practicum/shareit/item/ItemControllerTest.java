@@ -83,7 +83,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
 
-        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", 1))
+        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", userDto1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
