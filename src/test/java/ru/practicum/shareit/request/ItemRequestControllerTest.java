@@ -16,8 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,15 +35,15 @@ public class ItemRequestControllerTest {
     @BeforeEach
     void setUp() {
         userDto1 = new UserDto(
-                1,
+                3,
                 "John",
                 "john.doe@mail.com");
         userDto2 = new UserDto(
-                2,
+                4,
                 "Bob",
                 "bob.doe@mail.com");
         itemDto = new ItemDto(
-                1,
+                2,
                 "thing 1",
                 "thing 1",
                 false,
@@ -85,7 +84,20 @@ public class ItemRequestControllerTest {
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+
+        itemDto.setAvailable(true);
+
+        mvc.perform(patch("/items/" + itemDto.getId())
+                        .content(mapper.writeValueAsString(itemDto))
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -96,7 +108,7 @@ public class ItemRequestControllerTest {
 
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -104,7 +116,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests/" + itemRequestDto.getId())
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -112,14 +124,14 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

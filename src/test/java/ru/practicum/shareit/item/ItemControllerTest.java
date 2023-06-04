@@ -69,11 +69,12 @@ public class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto2.getName())));
+                .andExpect(jsonPath("$.name", is(userDto2.getName())))
+                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -92,7 +93,7 @@ public class ItemControllerTest {
 
         mvc.perform(patch("/items/" + itemDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", 1)
+                        .header("X-Sharer-User-Id", userDto1.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
