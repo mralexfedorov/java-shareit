@@ -33,7 +33,7 @@ public class ItemControllerTest {
         userDto = new UserDto(
                 0,
                 "John",
-                "john.doe@mail.com");
+                "john.doer@mail.com");
 
         itemDto = new ItemDto(
                 0,
