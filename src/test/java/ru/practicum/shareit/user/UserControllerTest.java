@@ -57,6 +57,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name", is(createdUser1.getName())))
                 .andExpect(jsonPath("$.email", is(createdUser1.getEmail())));
 
+        mvc.perform(get("/users"));
+
         UserDto createdUser2 = mapper.readValue(mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto2))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -66,6 +68,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name", is(userDto2.getName())))
                 .andExpect(jsonPath("$.email", is(userDto2.getEmail())))
                 .andReturn().getResponse().getContentAsString(), UserDto.class);
+
+        mvc.perform(get("/users"));
 
         createdUser2.setEmail("bob.doe@mail.org");
 

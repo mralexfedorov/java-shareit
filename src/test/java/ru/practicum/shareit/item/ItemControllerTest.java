@@ -80,7 +80,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(createdItemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(createdItemDto.getAvailable())));
 
-        itemDto.setAvailable(true);
+        createdItemDto.setAvailable(true);
 
         mvc.perform(patch("/items/" + createdItemDto.getId())
                         .content(mapper.writeValueAsString(createdItemDto))
