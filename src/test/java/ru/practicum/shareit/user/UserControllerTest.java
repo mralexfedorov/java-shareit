@@ -77,8 +77,5 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].email", is(userDto1.getEmail())))
                 .andExpect(jsonPath("$[1].name", is(userDto2.getName())))
                 .andExpect(jsonPath("$[1].email", is(userDto2.getEmail())));
-
-        mvc.perform(delete("/users/" + userDto1.getId()));
-        mvc.perform(delete("/users/" + userDto2.getId()));
     }
 }

@@ -31,15 +31,15 @@ public class BookingControllerTest {
     @Test
     void createBookingAndCheck() throws Exception {
         UserDto userDto1 = new UserDto(
-                1,
+                7,
                 "John",
                 "john.doe@mail.com");
         UserDto userDto2 = new UserDto(
-                2,
+                8,
                 "Bob",
                 "bob.doe@mail.com");
         ItemDto itemDto = new ItemDto(
-                1,
+                3,
                 "thing 1",
                 "thing 1",
                 true,

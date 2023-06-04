@@ -128,8 +128,5 @@ public class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-        mvc.perform(delete("/users/" + userDto1.getId()));
-        mvc.perform(delete("/users/" + userDto2.getId()));
     }
 }
