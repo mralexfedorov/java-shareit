@@ -60,6 +60,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())))
                 .andReturn().getResponse().getContentAsString(), UserDto.class);
 
+        itemDto.setOwner(createdUser);
+
         ItemDto createdItemDto = mapper.readValue(mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
                         .header("X-Sharer-User-Id", createdUser.getId())
