@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,19 +28,23 @@ public class BookingControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
+    private UserDto userDto1;
+    private UserDto userDto2;
+    private ItemDto itemDto;
+    private BookingDto bookingDto;
 
-    @Test
-    void createBookingAndCheck() throws Exception {
-        UserDto userDto1 = new UserDto(
-                7,
+    @BeforeEach
+    void setUp() {
+        userDto1 = new UserDto(
+                1,
                 "John",
                 "john.doe@mail.com");
-        UserDto userDto2 = new UserDto(
-                8,
+        userDto2 = new UserDto(
+                2,
                 "Bob",
                 "bob.doe@mail.com");
-        ItemDto itemDto = new ItemDto(
-                3,
+        itemDto = new ItemDto(
+                1,
                 "thing 1",
                 "thing 1",
                 true,
@@ -49,7 +54,39 @@ public class BookingControllerTest {
                 null,
                 null
         );
-        BookingDto bookingDto = new BookingDto(
+        bookingDto = new BookingDto(
+                1,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                itemDto,
+                itemDto.getId(),
+                userDto2,
+                BookingStatus.WAITING
+        );
+    }
+
+    @Test
+    void createBookingAndCheck() throws Exception {
+        userDto1 = new UserDto(
+                1,
+                "John",
+                "john.doe@mail.com");
+        userDto2 = new UserDto(
+                2,
+                "Bob",
+                "bob.doe@mail.com");
+        itemDto = new ItemDto(
+                1,
+                "thing 1",
+                "thing 1",
+                true,
+                userDto1,
+                0,
+                null,
+                null,
+                null
+        );
+        bookingDto = new BookingDto(
                 1,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2),

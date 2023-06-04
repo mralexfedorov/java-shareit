@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,18 +25,23 @@ public class UserControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
+    private UserDto userDto1;
+    private UserDto userDto2;
 
-    @Test
-    void createUserAndCheck() throws Exception {
-        UserDto userDto1 = new UserDto(
+    @BeforeEach
+    void setUp() {
+        userDto1 = new UserDto(
                 1,
                 "John",
                 "john.doe@mail.com");
-        UserDto userDto2 = new UserDto(
+        userDto2 = new UserDto(
                 2,
                 "Bob",
                 "bob.doe@mail.com");
+    }
 
+    @Test
+    void createUserAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -77,5 +83,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].email", is(userDto1.getEmail())))
                 .andExpect(jsonPath("$[1].name", is(userDto2.getName())))
                 .andExpect(jsonPath("$[1].email", is(userDto2.getEmail())));
+
+        mvc.perform(delete("/users/" + userDto1.getId()));
+        mvc.perform(delete("/users/" + userDto2.getId()));
     }
 }

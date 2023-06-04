@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,57 +27,51 @@ public class ItemRequestControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
+    private UserDto userDto;
+    private ItemDto itemDto;
+    private ItemRequestDto itemRequestDto;
 
-    @Test
-    void createItemRequestAndCheck() throws Exception {
-        UserDto userDto1 = new UserDto(
-                5,
+    @BeforeEach
+    void setUp() {
+        userDto = new UserDto(
+                1,
                 "John",
                 "john.doe@mail.com");
-        UserDto userDto2 = new UserDto(
-                6,
-                "Bob",
-                "bob.doe@mail.com");
-        ItemDto itemDto = new ItemDto(
-                2,
+
+        itemDto = new ItemDto(
+                1,
                 "thing 1",
                 "thing 1",
                 false,
-                userDto1,
+                userDto,
                 0,
                 null,
                 null,
                 null
         );
-        ItemRequestDto itemRequestDto = new ItemRequestDto(
+        itemRequestDto = new ItemRequestDto(
                 1,
                 "search for thing 1",
-                userDto1,
+                userDto,
                 LocalDateTime.now(),
                 null
         );
+    }
 
+    @Test
+    void createItemRequestAndCheck() throws Exception {
         mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto1))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto1.getName())))
-                .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
-
-        mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto2))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto2.getName())))
-                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -89,7 +84,7 @@ public class ItemRequestControllerTest {
 
         mvc.perform(patch("/items/" + itemDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -100,7 +95,7 @@ public class ItemRequestControllerTest {
 
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -108,7 +103,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests/" + itemRequestDto.getId())
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -116,14 +111,14 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

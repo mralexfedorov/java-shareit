@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,50 +25,43 @@ public class ItemControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
+    private UserDto userDto;
+    private ItemDto itemDto;
 
-    @Test
-    void createItemAndCheck() throws Exception {
-        UserDto userDto1 = new UserDto(
-                3,
+    @BeforeEach
+    void setUp() {
+        userDto = new UserDto(
+                1,
                 "John",
                 "john.doe@mail.com");
-        UserDto userDto2 = new UserDto(
-                4,
-                "Bob",
-                "bob.doe@mail.com");
-        ItemDto itemDto = new ItemDto(
+
+        itemDto = new ItemDto(
                 1,
                 "thing 1",
                 "thing 1",
                 false,
-                userDto1,
+                userDto,
                 0,
                 null,
                 null,
                 null
         );
+    }
 
+    @Test
+    void createItemAndCheck() throws Exception {
         mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto1))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto1.getName())))
-                .andExpect(jsonPath("$.email", is(userDto1.getEmail())));
-
-        mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto2))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(userDto2.getName())))
-                .andExpect(jsonPath("$.email", is(userDto2.getEmail())));
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -76,7 +70,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
 
-        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", userDto1.getId()))
+        mvc.perform(get("/items/" + itemDto.getId()).header("X-Sharer-User-Id", userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
@@ -86,7 +80,7 @@ public class ItemControllerTest {
 
         mvc.perform(patch("/items/" + itemDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
-                        .header("X-Sharer-User-Id", userDto1.getId())
+                        .header("X-Sharer-User-Id", userDto.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
