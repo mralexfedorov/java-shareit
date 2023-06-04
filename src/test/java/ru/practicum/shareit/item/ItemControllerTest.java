@@ -28,11 +28,11 @@ public class ItemControllerTest {
     @Test
     void createItemAndCheck() throws Exception {
         UserDto userDto1 = new UserDto(
-                1,
+                3,
                 "John",
                 "john.doe@mail.com");
         UserDto userDto2 = new UserDto(
-                2,
+                4,
                 "Bob",
                 "bob.doe@mail.com");
         ItemDto itemDto = new ItemDto(

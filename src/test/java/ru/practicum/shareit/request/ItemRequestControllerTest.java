@@ -30,11 +30,11 @@ public class ItemRequestControllerTest {
     @Test
     void createItemRequestAndCheck() throws Exception {
         UserDto userDto1 = new UserDto(
-                3,
+                5,
                 "John",
                 "john.doe@mail.com");
         UserDto userDto2 = new UserDto(
-                4,
+                6,
                 "Bob",
                 "bob.doe@mail.com");
         ItemDto itemDto = new ItemDto(
