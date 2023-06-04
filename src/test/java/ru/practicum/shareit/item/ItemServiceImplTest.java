@@ -32,20 +32,22 @@ public class ItemServiceImplTest {
     void saveItem() {
         // given
         UserDto userDto = new UserDto(1, "Vlad", "vlad@email.com");
-        ItemDto itemDto = new ItemDto(1, "Thing 1", "Thing 1 for doing something", true,
-                userDto, 1, null, null, null);
 
         // when
-        userService.createUser(userDto);
-        itemService.addItem(userDto.getId(), itemDto);
+        UserDto createdUser = userService.createUser(userDto);
+
+        ItemDto itemDto = new ItemDto(1, "Thing 1", "Thing 1 for doing something", true,
+                createdUser, 1, null, null, null);
+
+        ItemDto createdItem = itemService.addItem(createdUser.getId(), itemDto);
 
         // then
         TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
-        Item item = query.setParameter("id", itemDto.getId())
+        Item item = query.setParameter("id", createdItem.getId())
                 .getSingleResult();
 
         assertThat(item.getId(), notNullValue());
-        assertThat(item.getName(), equalTo(itemDto.getName()));
-        assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
+        assertThat(item.getName(), equalTo(createdItem.getName()));
+        assertThat(item.getDescription(), equalTo(createdItem.getDescription()));
     }
 }
