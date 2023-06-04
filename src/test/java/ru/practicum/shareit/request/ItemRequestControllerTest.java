@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,22 +26,18 @@ public class ItemRequestControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    private UserDto userDto1;
-    private UserDto userDto2;
-    private ItemDto itemDto;
-    private ItemRequestDto itemRequestDto;
 
-    @BeforeEach
-    void setUp() {
-        userDto1 = new UserDto(
+    @Test
+    void createItemRequestAndCheck() throws Exception {
+        UserDto userDto1 = new UserDto(
                 3,
                 "John",
                 "john.doe@mail.com");
-        userDto2 = new UserDto(
+        UserDto userDto2 = new UserDto(
                 4,
                 "Bob",
                 "bob.doe@mail.com");
-        itemDto = new ItemDto(
+        ItemDto itemDto = new ItemDto(
                 2,
                 "thing 1",
                 "thing 1",
@@ -53,17 +48,14 @@ public class ItemRequestControllerTest {
                 null,
                 null
         );
-        itemRequestDto = new ItemRequestDto(
+        ItemRequestDto itemRequestDto = new ItemRequestDto(
                 1,
                 "search for thing 1",
                 userDto1,
                 LocalDateTime.now(),
                 null
         );
-    }
 
-    @Test
-    void createItemRequestAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -136,5 +128,8 @@ public class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        mvc.perform(delete("/users/" + userDto1.getId()));
+        mvc.perform(delete("/users/" + userDto2.getId()));
     }
 }

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,21 +24,18 @@ public class ItemControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    private UserDto userDto1;
-    private UserDto userDto2;
-    private ItemDto itemDto;
 
-    @BeforeEach
-    void setUp() {
-        userDto1 = new UserDto(
+    @Test
+    void createItemAndCheck() throws Exception {
+        UserDto userDto1 = new UserDto(
                 1,
                 "John",
                 "john.doe@mail.com");
-        userDto2 = new UserDto(
+        UserDto userDto2 = new UserDto(
                 2,
                 "Bob",
                 "bob.doe@mail.com");
-        itemDto = new ItemDto(
+        ItemDto itemDto = new ItemDto(
                 1,
                 "thing 1",
                 "thing 1",
@@ -50,10 +46,7 @@ public class ItemControllerTest {
                 null,
                 null
         );
-    }
 
-    @Test
-    void createItemAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)

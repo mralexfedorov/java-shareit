@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,22 +27,18 @@ public class BookingControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    private UserDto userDto1;
-    private UserDto userDto2;
-    private ItemDto itemDto;
-    private BookingDto bookingDto;
 
-    @BeforeEach
-    void setUp() {
-        userDto1 = new UserDto(
+    @Test
+    void createBookingAndCheck() throws Exception {
+        UserDto userDto1 = new UserDto(
                 1,
                 "John",
                 "john.doe@mail.com");
-        userDto2 = new UserDto(
+        UserDto userDto2 = new UserDto(
                 2,
                 "Bob",
                 "bob.doe@mail.com");
-        itemDto = new ItemDto(
+        ItemDto itemDto = new ItemDto(
                 1,
                 "thing 1",
                 "thing 1",
@@ -54,7 +49,7 @@ public class BookingControllerTest {
                 null,
                 null
         );
-        bookingDto = new BookingDto(
+        BookingDto bookingDto = new BookingDto(
                 1,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2),
@@ -63,10 +58,7 @@ public class BookingControllerTest {
                 userDto2,
                 BookingStatus.WAITING
         );
-    }
 
-    @Test
-    void createBookingAndCheck() throws Exception {
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
