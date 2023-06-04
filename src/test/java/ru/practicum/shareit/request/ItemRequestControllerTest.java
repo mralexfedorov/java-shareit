@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.itemRequest.dto.ItemRequestDto;
-import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
-import ru.practicum.shareit.itemRequest.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
@@ -30,11 +28,6 @@ public class ItemRequestControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private ItemRequestService itemRequestService;
-    @Autowired
-    private ItemRequestRepository itemRequestRepository;
-
     private UserDto userDto1;
     private UserDto userDto2;
     private ItemDto itemDto;

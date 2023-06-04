@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 
@@ -27,10 +25,6 @@ public class UserControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
     private UserDto userDto1;
     private UserDto userDto2;
 

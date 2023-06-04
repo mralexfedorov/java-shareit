@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
@@ -27,10 +25,6 @@ public class ItemControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private ItemService itemService;
-    @Autowired
-    private ItemRepository itemRepository;
     private UserDto userDto1;
     private UserDto userDto2;
     private ItemDto itemDto;
