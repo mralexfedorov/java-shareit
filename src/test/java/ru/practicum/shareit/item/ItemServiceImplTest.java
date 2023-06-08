@@ -60,11 +60,13 @@ public class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(createdItem.getName()));
         assertThat(item.getDescription(), equalTo(createdItem.getDescription()));
 
+        itemDto.setId(createdItem.getId());
+
         // item updating
         itemDto.setName("Thing 2 for doing something");
 
         // when
-        itemService.updateItem(createdItem.getId(), createdItem, createdItem.getId());
+        itemService.updateItem(createdUser.getId(), createdItem, createdItem.getId());
 
         // then
         query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
@@ -75,7 +77,7 @@ public class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(createdItem.getName()));
         assertThat(item.getDescription(), equalTo(createdItem.getDescription()));
 
-        List<ItemDto> userItems = itemService.getAllItemsByOwnerId(userDto.getId(),
+        List<ItemDto> userItems = itemService.getAllItemsByOwnerId(createdUser.getId(),
                 PageRequest.of(0, 20));
 
         assertThat(userItems.size(), equalTo(1));
