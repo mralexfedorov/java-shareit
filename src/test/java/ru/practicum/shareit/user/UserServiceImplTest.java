@@ -31,10 +31,19 @@ public class UserServiceImplTest {
 
     @Test
     void userServiceTest() {
-        // given
-        UserDto userDto = new UserDto(1, "Vlad", "vlad@email.com");
+        // user creating
+        UserDto userDto = new UserDto(1, "Vlad", null);
 
         // when
+        try {
+            service.createUser(userDto);
+        } catch (ValidationException e) {
+            //then
+            assertThat(e.getMessage(), equalTo("Email не может быть пустым."));
+        }
+
+        // when
+        userDto.setEmail("vlad@email.com");
         service.createUser(userDto);
 
         // then
@@ -42,28 +51,46 @@ public class UserServiceImplTest {
         User user = query.setParameter("email", userDto.getEmail())
                 .getSingleResult();
 
+        userDto.setId(user.getId());
+
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
 
-        // given
-        userDto.setId(user.getId());
+        // user updating
+        userDto.setEmail("vlad@mail.com");
+
+        // when
+        service.updateUser(userDto, userDto.getId());
+
+        // then
+        query = em.createQuery("Select u from User u where u.email = :email", User.class);
+        user = query.setParameter("email", userDto.getEmail())
+                .getSingleResult();
+
+        assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo(userDto.getName()));
+        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+
+        // user updating, email is not valid
         userDto.setEmail("vlademail.com");
 
         // when
         try {
             service.updateUser(userDto, userDto.getId());
         } catch (ValidationException e) {
+            //then
             assertThat(e.getMessage(), equalTo("Невалидный Email"));
         }
 
-        // given
+        // user deleting
         service.deleteUser(userDto.getId());
 
         // when
         try {
             service.getUser(userDto.getId());
         } catch (NoSuchElementException e) {
+            //then
             assertThat(e.getMessage(), equalTo("Пользователь с таким id " + userDto.getId()
                     + " не существует"));
         }
