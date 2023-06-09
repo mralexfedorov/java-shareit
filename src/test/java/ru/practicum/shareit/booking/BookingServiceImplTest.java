@@ -18,9 +18,11 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @Transactional
 @SpringBootTest(
@@ -34,8 +36,8 @@ public class BookingServiceImplTest {
     private final UserService userService;
 
     @Test
-    void saveBooking() {
-        // given
+    void bookingServiceTest() {
+        // booking creating
         UserDto userDto1 = new UserDto(0, "Vlad", "vlady@email.com");
         UserDto userDto2 = new UserDto(0, "Bob", "joey.doe@mail.com");
 
@@ -67,5 +69,28 @@ public class BookingServiceImplTest {
                 .getSingleResult();
 
         assertThat(booking.getId(), notNullValue());
+    }
+
+    @Test
+    void bookingValidationTest() {
+        // booking creating
+        BookingDto bookingDto = new BookingDto(
+                1,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2),
+                null,
+                null,
+                null,
+                BookingStatus.WAITING
+        );
+
+        // then
+        try {
+            bookingService.save(bookingDto, 1);
+        } catch (NoSuchElementException e) {
+            //then
+            assertThat(e.getMessage(), equalTo("Пользователь с таким id "
+                    +  bookingDto.getId() + " не существует"));
+        }
     }
 }
