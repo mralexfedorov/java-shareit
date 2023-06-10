@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class BookingController {
     public List<BookingDto> getByBooker(@RequestHeader("X-Sharer-User-Id") int userId,
                                         @RequestParam(name = "state", defaultValue = "ALL") String state,
                                         @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
-                                        @RequestParam(name = "size", defaultValue = "20") @PositiveOrZero int size) {
+                                        @RequestParam(name = "size", defaultValue = "20") @Positive int size) {
         log.info("Получение бронирований со статусом {} пользователем c id = {}", state, userId);
         return bookingService.getByBooker(userId, state, PageRequest.of(from / size, size));
     }

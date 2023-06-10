@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -44,8 +46,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAllItemsByOwnerId(@RequestHeader(USER_ID) int userId,
-                                              @RequestParam(name = "from", defaultValue = "0") int from,
-                                              @RequestParam(name = "size", defaultValue = "20") int size) {
+                                              @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                              @RequestParam(name = "size", defaultValue = "20") @Positive int size) {
         log.info("Получение всех предметов пользователя с id=" + userId);
         return itemService.getAllItemsByOwnerId(userId, PageRequest.of(from, size));
     }

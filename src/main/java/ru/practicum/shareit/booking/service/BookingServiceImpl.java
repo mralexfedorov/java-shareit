@@ -147,16 +147,31 @@ public class BookingServiceImpl implements BookingService {
         }
 
         switch (bookingState) {
-            case ALL: return bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId, pageable).stream()
-                    .map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case CURRENT: return bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
-                    now, now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case PAST: return bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId,
-                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case FUTURE: return bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(bookerId,
-                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            default: return bookingRepository.findAllByBookerIdAndStatus(bookerId, BookingStatus.valueOf(state),
-                            pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+            case ALL: return bookingRepository
+                    .findAllByBookerIdOrderByStartDesc(bookerId, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case CURRENT: return bookingRepository
+                    .findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, now, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case PAST: return bookingRepository
+                    .findAllByBookerIdAndEndBeforeOrderByStartDesc(bookerId, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case FUTURE: return bookingRepository
+                    .findAllByBookerIdAndStartAfterOrderByStartDesc(bookerId, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            default: return bookingRepository
+                    .findAllByBookerIdAndStatus(bookerId, BookingStatus.valueOf(state), pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -175,16 +190,31 @@ public class BookingServiceImpl implements BookingService {
         }
 
         switch (bookingState) {
-            case ALL: return bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId, pageable).stream()
-                    .map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case CURRENT: return bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
-                    now, now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case PAST: return bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId,
-                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            case FUTURE: return bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId,
-                    now, pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-            default: return bookingRepository.findAllByItemOwnerIdAndStatus(ownerId, BookingStatus.valueOf(state),
-                            pageable).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+            case ALL: return bookingRepository
+                    .findAllByItemOwnerIdOrderByStartDesc(ownerId, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case CURRENT: return bookingRepository
+                    .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId, now, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case PAST: return bookingRepository
+                    .findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            case FUTURE: return bookingRepository
+                    .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(ownerId, now, pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+            default: return bookingRepository
+                    .findAllByItemOwnerIdAndStatus(ownerId, BookingStatus.valueOf(state), pageable)
+                    .stream()
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
         }
     }
 }

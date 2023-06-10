@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public ItemRequestDto addItemRequest(ItemRequestDto itemRequestDto, int requesterId) {
         User requester = userRepository.findById(requesterId).orElseThrow(() -> new NoSuchElementException(
@@ -76,12 +78,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAllItemRequests(int requesterId, Pageable pageable) {
-        User requester = userRepository.findById(requesterId).orElseThrow(() -> new NoSuchElementException(
+        userRepository.findById(requesterId).orElseThrow(() -> new NoSuchElementException(
                 String.format("Пользователь с таким id %s не существует", requesterId)));
 
         List<ItemRequestDto> itemRequests = new ArrayList<>();
 
-        for (ItemRequest itemRequest: itemRequestRepository.findAllByRequesterIdNot(requesterId, pageable)) {
+        List<ItemRequest> foundedItemRequests = itemRequestRepository.findAllByRequesterIdNot(requesterId, pageable);
+
+        for (ItemRequest itemRequest: foundedItemRequests) {
             itemRequests.add(ItemRequestMapper.toItemRequestWitItemsDto(itemRequest,
                     itemRepository.findAllByRequestId(itemRequest.getId())
                             .stream().map(ItemMapper::toItemDto).collect(Collectors.toList())
